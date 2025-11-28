@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interactive Food Price List</title>
+    <title>Interactive Food Price List (Philippines)</title>
     <style>
         /* --- CSS STYLES --- */
         body {
@@ -66,7 +66,7 @@
             background-color: #007bff;
             color: white;
             cursor: pointer;
-            user-select: none; /* Prevents text selection on header click */
+            user-select: none;
         }
         tr:nth-child(even) {
             background-color: #f2f2f2;
@@ -94,7 +94,7 @@
         .save-btn {
             background-color: #17a2b8;
             color: white;
-            display: none; /* Hidden by default */
+            display: none; 
         }
         .editable-input {
             width: calc(100% - 10px);
@@ -106,16 +106,17 @@
             width: 100%; 
             padding: 10px; 
         }
-        /* Custom style for the Peso sign to ensure it displays correctly */
+        /* Custom style for the Peso sign */
         .peso {
-            font-family: Arial, sans-serif; /* Use a font that supports the sign */
+            font-family: Arial, sans-serif; 
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>🛒 Interactive Food Price List</h1>
+    <h1>🛒 Interactive Food Price List (Peso)</h1>
     
     <div id="add-form">
         <input type="text" id="food-name" placeholder="Food Name (e.g., Rice)" required>
@@ -146,9 +147,10 @@
     const foodListBody = document.getElementById('food-list');
     const nameInput = document.getElementById('food-name');
     const priceInput = document.getElementById('food-price');
-    const currencySymbol = '₱'; // Philippine Peso Symbol
+    const currencySymbol = '₱'; 
 
-    // Load from Local Storage or use updated Peso defaults
+    // --- Load from Local Storage ---
+    // This array acts as the current data source.
     let foodItems = JSON.parse(localStorage.getItem('foodPrices')) || [
         { name: 'Rice (Kilo)', price: 55.00 },
         { name: 'Eggs (Dozen)', price: 90.00 },
@@ -177,11 +179,10 @@
             const row = foodListBody.insertRow();
             row.setAttribute('data-index', originalIndex); 
 
-            // Item Name Cell (Editable display)
             let cellName = row.insertCell(0);
             cellName.innerHTML = `<span id="name-${originalIndex}">${item.name}</span>`;
 
-            // Price Cell (Editable display) - Peso formatting applied here
+            // Price Cell with Peso formatting
             let cellPrice = row.insertCell(1);
             cellPrice.innerHTML = `<span class="peso">${currencySymbol}</span> <span id="price-${originalIndex}">${item.price.toFixed(2)}</span>`;
 
@@ -206,11 +207,10 @@
         if (name && !isNaN(price) && price >= 0) {
             foodItems.push({ name: name, price: price });
             
-            // Clear inputs
             nameInput.value = '';
             priceInput.value = '';
             
-            // Re-render the full list (clearing search results) and save
+            // Re-render the full list and save
             document.getElementById('search-input').value = '';
             renderList(foodItems);
             saveItems(); 
@@ -226,7 +226,6 @@
         if (confirm(`Are you sure you want to delete "${foodItems[indexToDelete].name}"?`)) {
             foodItems.splice(indexToDelete, 1);
             
-            // Re-render the full list and save
             renderList(foodItems);
             saveItems();
         }
@@ -244,7 +243,7 @@
 
         // Replace spans with input fields
         nameSpan.innerHTML = `<input type="text" id="edit-name-${index}" value="${item.name}" class="editable-input">`;
-        // Include the Peso sign outside the input field for visual clarity
+        // Put Peso sign outside the input for cleaner input
         priceSpan.innerHTML = `<span class="peso">${currencySymbol}</span> <input type="number" id="edit-price-${index}" value="${item.price.toFixed(2)}" step="0.01" class="editable-input" style="width: calc(100% - 20px);">`;
         
         // Toggle buttons
@@ -263,17 +262,16 @@
         const newPrice = parseFloat(newPriceInput.value);
 
         if (newName && !isNaN(newPrice) && newPrice >= 0) {
-            // Update the array item
+            
             foodItems[index].name = newName;
             foodItems[index].price = newPrice;
             
-            // Re-render the full list and save
             renderList(foodItems);
             saveItems();
 
         } else {
             alert('Invalid input. Changes not saved.');
-            // Just re-render to revert the HTML input fields back to text
+            // Re-render to revert HTML back to previous valid state
             renderList(foodItems);
         }
     }
@@ -298,13 +296,13 @@
         foodItems.sort((a, b) => {
             let valA, valB;
 
-            if (columnIndex === 0) { // Sort by Name (String)
+            if (columnIndex === 0) { 
                 valA = a.name.toLowerCase();
                 valB = b.name.toLowerCase();
                 if (valA < valB) return -1 * sortDirection;
                 if (valA > valB) return 1 * sortDirection;
                 return 0;
-            } else if (columnIndex === 1) { // Sort by Price (Number)
+            } else if (columnIndex === 1) { 
                 valA = a.price;
                 valB = b.price;
                 return (valA - valB) * sortDirection;
@@ -312,16 +310,13 @@
             return 0;
         });
 
-        // Reverse direction for next click
         sortDirection = -sortDirection;
         
-        // Re-render the sorted list
         renderList(foodItems);
     }
 
     // --- Initial Load ---
     document.addEventListener('DOMContentLoaded', () => {
-        // Load the initial list from storage when the page loads
         renderList(foodItems);
     });
 
